@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passaporte da Fluência — 90 dias</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --ink:#1B3A4B;
+    --ink-light:#2E5468;
+    --paper:#F3EAD3;
+    --paper-dark:#E7DAB8;
+    --stamp:#B5482E;
+    --stamp-light:#D9C3A8;
+    --gold:#A67C3D;
+    --line:#C8B98F;
+    --green:#3B6D42;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    background:#0F1F27;
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    padding:32px 16px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .passport{
+    width:100%;
+    max-width:760px;
+    background:var(--paper);
+    border-radius:6px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+    overflow:hidden;
+    position:relative;
+    border:1px solid var(--line);
+  }
+
+  .cover{
+    background:linear-gradient(180deg,var(--ink) 0%,var(--ink-light) 100%);
+    padding:40px 32px 32px;
+    color:var(--paper);
+    text-align:center;
+    position:relative;
+  }
+
+  .cover::after{
+    content:"";
+    position:absolute;
+    inset:10px;
+    border:1px solid rgba(243,234,211,0.35);
+    border-radius:4px;
+    pointer-events:none;
+  }
+
+  .emblem{
+    width:56px;
+    height:56px;
+    margin:0 auto 14px;
+    border:2px solid var(--paper);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Fraunces',serif;
+    font-size:24px;
+    font-weight:600;
+  }
+
+  .cover h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:26px;
+    letter-spacing:0.5px;
+    margin:0 0 6px;
+  }
+
+  .cover p{
+    font-size:13px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    opacity:0.75;
+    margin:0;
+  }
+
+  .holder-row{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-top:18px;
+    flex-wrap:wrap;
+  }
+
+  .holder-chip{
+    font-size:11px;
+    padding:5px 12px;
+    border:1px solid rgba(243,234,211,0.4);
+    border-radius:20px;
+    opacity:0.85;
+  }
+
+  .tabs{
+    display:flex;
+    overflow-x:auto;
+    background:var(--paper-dark);
+    border-bottom:1px solid var(--line);
+    -ms-overflow-style:none;
+    scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+
+  .tab{
+    flex:0 0 auto;
+    padding:14px 18px;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink-light);
+    cursor:pointer;
+    white-space:nowrap;
+    border-bottom:3px solid transparent;
+    background:none;
+    border-top:none;
+    border-left:none;
+    border-right:none;
+    font-family:'Inter',sans-serif;
+  }
+
+  .tab.active{
+    color:var(--stamp);
+    border-bottom-color:var(--stamp);
+    background:var(--paper);
+  }
+
+  .page{
+    padding:28px 28px 36px;
+    display:none;
+  }
+
+  .page.active{
+    display:block;
+  }
+
+  .page-title{
+    font-family:'Fraunces',serif;
+    font-size:20px;
+    font-weight:600;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+
+  .page-sub{
+    font-size:13px;
+    color:var(--gold);
+    margin:0 0 20px;
+  }
+
+  .card{
+    background:#FBF6E9;
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:16px 18px;
+    margin-bottom:12px;
+    position:relative;
+  }
+
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+  }
+
+  .en{
+    font-family:'Fraunces',serif;
+    font-size:16px;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 2px;
+  }
+
+  .pt{
+    font-size:13px;
+    color:var(--ink-light);
+    margin:0;
+  }
+
+  .play-btn{
+    flex:0 0 auto;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:1px solid var(--stamp);
+    background:transparent;
+    color:var(--stamp);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    transition:transform 0.15s ease, background 0.15s ease;
+  }
+
+  .play-btn:active{
+    transform:scale(0.92);
+  }
+
+  .play-btn.playing{
+    background:var(--stamp);
+    color:var(--paper);
+  }
+
+  .examples{
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px dashed var(--line);
+  }
+
+  .example-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:6px;
+    font-size:13px;
+  }
+
+  .example-row:last-child{margin-bottom:0;}
+
+  .example-text{
+    flex:1;
+    color:var(--ink-light);
+    font-style:italic;
+  }
+
+  .mini-play{
+    flex:0 0 auto;
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    border:1px solid var(--gold);
+    background:transparent;
+    color:var(--gold);
+    cursor:pointer;
+    font-size:9px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .stamp-badge{
+    position:absolute;
+    top:14px;
+    right:14px;
+    width:40px;
+    height:40px;
+    border:2px solid var(--green);
+    border-radius:50%;
+    color:var(--green);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+    transform:rotate(-12deg);
+    opacity:0.85;
+  }
+
+  .stamp-badge.stamped{
+    display:flex;
+  }
+
+  .card{
+    padding-right:56px;
+  }
+
+  .practice-btn{
+    width:100%;
+    margin-top:14px;
+    padding:11px;
+    border-radius:4px;
+    border:1px solid var(--stamp);
+    background:transparent;
+    color:var(--stamp);
+    font-size:13px;
+    font-weight:500;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+
+  .practice-btn:hover{
+    background:var(--stamp);
+    color:var(--paper);
+  }
+
+  .footer-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 28px;
+    background:var(--paper-dark);
+    border-top:1px solid var(--line);
+    font-size:12px;
+    color:var(--ink-light);
+  }
+
+  .progress-track{
+    flex:1;
+    height:4px;
+    background:var(--line);
+    border-radius:2px;
+    margin:0 14px;
+    overflow:hidden;
+  }
+
+  .progress-fill{
+    height:100%;
+    background:var(--stamp);
+    width:0%;
+    transition:width 0.3s ease;
+  }
+
+  select#voiceRate{
+    font-size:11px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    background:#FBF6E9;
+    color:var(--ink);
+    padding:3px 6px;
+    font-family:'Inter',sans-serif;
+  }
+
+  @media (max-width:480px){
+    .cover{padding:32px 20px 24px;}
+    .page{padding:22px 18px 28px;}
+    .footer-bar{padding:12px 18px;flex-wrap:wrap;gap:8px;}
+    .progress-track{order:3;flex-basis:100%;margin:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="passport">
+
+  <div class="cover">
+    <div class="emblem">EN</div>
+    <h1>Passaporte da Fluência</h1>
+    <p>90 dias · Português → Inglês</p>
+    <div class="holder-row">
+      <span class="holder-chip">Nível A2 → B1</span>
+      <span class="holder-chip">Foco: fala e escuta</span>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div id="pages"></div>
+
+  <div class="footer-bar">
+    <span id="stampCount">0/50 carimbados</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <select id="voiceRate">
+      <option value="0.75">Devagar</option>
+      <option value="0.9" selected>Normal</option>
+      <option value="1.1">Rápido</option>
+    </select>
+  </div>
+
+</div>
+
+<script>
+const DATA = [
+  {
+    block: "Ganhar tempo",
+    icon: "⏱",
+    items: [
+      {en:"Could you repeat that, please?", pt:"Você pode repetir, por favor?", ex1:"Sorry, could you repeat that, please? I missed it.", ex2:"Could you repeat that, please? The line is bad."},
+      {en:"My mind went blank.", pt:"Minha mente ficou em branco.", ex1:"Sorry, my mind went blank for a second.", ex2:"I knew the answer, but my mind went blank."},
+      {en:"What I mean is...", pt:"O que eu quero dizer é...", ex1:"What I mean is, we need more time.", ex2:"What I mean is, I agree, but with conditions."},
+      {en:"Give me a second.", pt:"Me dá um segundo.", ex1:"Give me a second, I'm thinking.", ex2:"Give me a second to check my notes."},
+      {en:"How do you say... in English?", pt:"Como se diz... em inglês?", ex1:"How do you say 'planilha' in English?", ex2:"How do you say that word again?"},
+      {en:"I'm not sure how to explain this, but...", pt:"Não sei bem como explicar isso, mas...", ex1:"I'm not sure how to explain this, but it's complicated.", ex2:"I'm not sure how to explain this, but I'll try."},
+      {en:"Can you say that in a different way?", pt:"Você pode dizer isso de outra forma?", ex1:"Can you say that in a different way? I didn't get it.", ex2:"Can you say that in a different way, more simply?"},
+      {en:"I didn't catch that.", pt:"Eu não peguei isso.", ex1:"Sorry, I didn't catch that last part.", ex2:"I didn't catch that, could you repeat?"},
+      {en:"What was that again?", pt:"O que foi isso mesmo?", ex1:"What was that again? The deadline?", ex2:"Sorry, what was that again?"}
+    ]
+  },
+  {
+    block: "Apresentar-se e trabalho",
+    icon: "🧭",
+    items: [
+      {en:"I work as a professor.", pt:"Eu trabalho como professora.", ex1:"I work as a professor at a university.", ex2:"I work as a professor, mostly management courses."},
+      {en:"I'm currently doing a master's in Data Science.", pt:"Atualmente estou fazendo um mestrado em Ciência de Dados.", ex1:"I'm currently doing a master's in Data Science online.", ex2:"I'm currently doing a master's, it's quite intense."},
+      {en:"I teach at a university.", pt:"Eu dou aula numa universidade.", ex1:"I teach at a university in Goiás.", ex2:"I teach at a university, management courses."},
+      {en:"I'm based in Jataí, Goiás, Brazil.", pt:"Eu moro em Jataí, Goiás, Brasil.", ex1:"I'm based in Jataí, Goiás, Brazil, but I work remotely too.", ex2:"I'm based in Brazil, in a small city called Jataí."},
+      {en:"Nice to meet you.", pt:"Prazer em te conhecer.", ex1:"Nice to meet you, I'm Maria.", ex2:"Nice to meet you too!"},
+      {en:"What do you do for a living?", pt:"O que você faz da vida?", ex1:"What do you do for a living?", ex2:"So, what do you do for a living these days?"},
+      {en:"I've been working on...", pt:"Eu tenho trabalhado em...", ex1:"I've been working on a new project.", ex2:"I've been working on my English lately."},
+      {en:"My background is in...", pt:"Minha formação é em...", ex1:"My background is in management.", ex2:"My background is in education, actually."}
+    ]
+  },
+  {
+    block: "Opinião",
+    icon: "💭",
+    items: [
+      {en:"I think that...", pt:"Eu acho que...", ex1:"I think that this is a good idea.", ex2:"I think that we should wait a bit."},
+      {en:"In my opinion...", pt:"Na minha opinião...", ex1:"In my opinion, it's too expensive.", ex2:"In my opinion, this works better."},
+      {en:"It seems to me that...", pt:"Me parece que...", ex1:"It seems to me that we need more data.", ex2:"It seems to me that everyone agrees."},
+      {en:"I'm not sure, but I'd say...", pt:"Não tenho certeza, mas eu diria...", ex1:"I'm not sure, but I'd say it's a good sign.", ex2:"I'm not sure, but I'd say we're close."},
+      {en:"That makes sense.", pt:"Isso faz sentido.", ex1:"That makes sense, thanks for explaining.", ex2:"That makes sense now that I think about it."},
+      {en:"From my point of view...", pt:"Do meu ponto de vista...", ex1:"From my point of view, it's worth trying.", ex2:"From my point of view, nothing changed."},
+      {en:"I guess so.", pt:"Acho que sim.", ex1:"I guess so, we'll see.", ex2:"Do you think it'll work? I guess so."}
+    ]
+  },
+  {
+    block: "Concordar e discordar",
+    icon: "🤝",
+    items: [
+      {en:"I totally agree with what you said.", pt:"Eu concordo totalmente com o que você disse.", ex1:"I totally agree with what you said about the deadline.", ex2:"I totally agree with what you said, it's true."},
+      {en:"I'm not so sure about that.", pt:"Não tenho tanta certeza sobre isso.", ex1:"I'm not so sure about that, let's check the numbers.", ex2:"I'm not so sure about that plan."},
+      {en:"I see your point, but...", pt:"Eu entendo seu ponto, mas...", ex1:"I see your point, but I still disagree.", ex2:"I see your point, but we need more time."},
+      {en:"Exactly!", pt:"Exatamente!", ex1:"Exactly! That's what I meant.", ex2:"Exactly, you got it right."},
+      {en:"That's true, but...", pt:"Isso é verdade, mas...", ex1:"That's true, but it's not that simple.", ex2:"That's true, but we still have a problem."},
+      {en:"It depends.", pt:"Depende.", ex1:"It depends on the budget.", ex2:"Does it work? It depends."},
+      {en:"I never thought about it that way.", pt:"Eu nunca tinha pensado por esse lado.", ex1:"I never thought about it that way, that's interesting.", ex2:"I never thought about it that way before."}
+    ]
+  },
+  {
+    block: "Pedir ajuda",
+    icon: "🆘",
+    items: [
+      {en:"Can you help me with this?", pt:"Você pode me ajudar com isso?", ex1:"Can you help me with this report?", ex2:"Can you help me with this later?"},
+      {en:"I'm struggling with...", pt:"Estou tendo dificuldade com...", ex1:"I'm struggling with this exercise.", ex2:"I'm struggling with the pronunciation of this word."},
+      {en:"This is a bit confusing.", pt:"Isso está um pouco confuso.", ex1:"This is a bit confusing, can you explain again?", ex2:"This is a bit confusing to me."},
+      {en:"Could you explain that again?", pt:"Você pode explicar isso de novo?", ex1:"Could you explain that again, more slowly?", ex2:"Could you explain that again with an example?"},
+      {en:"I need more time to understand this.", pt:"Preciso de mais tempo pra entender isso.", ex1:"I need more time to understand this topic.", ex2:"I need more time to understand this properly."}
+    ]
+  },
+  {
+    block: "Trabalho e dados",
+    icon: "📊",
+    items: [
+      {en:"We need to analyze this dataset.", pt:"Precisamos analisar esse conjunto de dados.", ex1:"We need to analyze this dataset before Friday.", ex2:"We need to analyze this dataset more carefully."},
+      {en:"Let's schedule a meeting.", pt:"Vamos marcar uma reunião.", ex1:"Let's schedule a meeting for next week.", ex2:"Let's schedule a meeting to discuss this."},
+      {en:"The deadline is next week.", pt:"O prazo é semana que vem.", ex1:"The deadline is next week, we should hurry.", ex2:"The deadline is next week, is everything ready?"},
+      {en:"This report shows that...", pt:"Esse relatório mostra que...", ex1:"This report shows that sales went up.", ex2:"This report shows that we need changes."},
+      {en:"I found an interesting insight.", pt:"Eu encontrei um insight interessante.", ex1:"I found an interesting insight in the data.", ex2:"I found an interesting insight while analyzing this."},
+      {en:"We should present this to the stakeholders.", pt:"Devemos apresentar isso pros stakeholders.", ex1:"We should present this to the stakeholders next week.", ex2:"We should present this to the stakeholders soon."}
+    ]
+  },
+  {
+    block: "Cotidiano",
+    icon: "☀",
+    items: [
+      {en:"I'm a bit tired today.", pt:"Estou um pouco cansada hoje.", ex1:"I'm a bit tired today, long day.", ex2:"I'm a bit tired today, but I'm okay."},
+      {en:"It's been a long day.", pt:"Foi um dia longo.", ex1:"It's been a long day, I need to rest.", ex2:"It's been a long day at work."},
+      {en:"I'm looking forward to...", pt:"Estou ansiosa por...", ex1:"I'm looking forward to the weekend.", ex2:"I'm looking forward to learning more English."}
+    ]
+  }
+];
+
+let currentTab = 0;
+let stamped = JSON.parse(localStorage.getItem('__fake_storage_stamps') || '{}');
+let synth = window.speechSynthesis;
+let enVoice = null;
+
+function pickVoice(){
+  const voices = synth.getVoices();
+  enVoice = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang && v.lang.startsWith('en')) || null;
+}
+if(synth){
+  pickVoice();
+  synth.onvoiceschanged = pickVoice;
+}
+
+function speak(text, btn){
+  if(!synth){ return; }
+  synth.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  if(enVoice) utter.voice = enVoice;
+  utter.lang = 'en-US';
+  utter.rate = parseFloat(document.getElementById('voiceRate').value);
+  if(btn){
+    document.querySelectorAll('.playing').forEach(el => el.classList.remove('playing'));
+    btn.classList.add('playing');
+    utter.onend = () => btn.classList.remove('playing');
+    utter.onerror = () => btn.classList.remove('playing');
+  }
+  synth.speak(utter);
+}
+
+function stampKey(blockIdx, itemIdx){
+  return blockIdx + '-' + itemIdx;
+}
+
+function toggleStamp(blockIdx, itemIdx, el){
+  const key = stampKey(blockIdx, itemIdx);
+  stamped[key] = !stamped[key];
+  localStorage.setItem('__fake_storage_stamps', JSON.stringify(stamped));
+  el.classList.toggle('stamped', stamped[key]);
+  updateProgress();
+}
+
+function updateProgress(){
+  const total = DATA.reduce((sum, b) => sum + b.items.length, 0);
+  const done = Object.values(stamped).filter(Boolean).length;
+  document.getElementById('stampCount').textContent = done + '/' + total + ' carimbados';
+  document.getElementById('progressFill').style.width = (done/total*100) + '%';
+}
+
+function render(){
+  const tabsEl = document.getElementById('tabs');
+  const pagesEl = document.getElementById('pages');
+  tabsEl.innerHTML = '';
+  pagesEl.innerHTML = '';
+
+  DATA.forEach((block, bIdx) => {
+    const tab = document.createElement('button');
+    tab.className = 'tab' + (bIdx === currentTab ? ' active' : '');
+    tab.textContent = block.icon + ' ' + block.block;
+    tab.onclick = () => { currentTab = bIdx; render(); };
+    tabsEl.appendChild(tab);
+
+    const page = document.createElement('div');
+    page.className = 'page' + (bIdx === currentTab ? ' active' : '');
+
+    const title = document.createElement('h2');
+    title.className = 'page-title';
+    title.textContent = block.block;
+    page.appendChild(title);
+
+    const sub = document.createElement('p');
+    sub.className = 'page-sub';
+    sub.textContent = block.items.length + ' expressões nesta página';
+    page.appendChild(sub);
+
+    block.items.forEach((item, iIdx) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const key = stampKey(bIdx, iIdx);
+      const stampBadge = document.createElement('div');
+      stampBadge.className = 'stamp-badge' + (stamped[key] ? ' stamped' : '');
+      stampBadge.textContent = '✓';
+      stampBadge.title = 'Marcar como praticado';
+      stampBadge.style.cursor = 'pointer';
+      stampBadge.style.display = 'flex';
+      stampBadge.onclick = () => toggleStamp(bIdx, iIdx, stampBadge);
+      card.appendChild(stampBadge);
+
+      const top = document.createElement('div');
+      top.className = 'card-top';
+
+      const textWrap = document.createElement('div');
+      const en = document.createElement('p');
+      en.className = 'en';
+      en.textContent = item.en;
+      const pt = document.createElement('p');
+      pt.className = 'pt';
+      pt.textContent = item.pt;
+      textWrap.appendChild(en);
+      textWrap.appendChild(pt);
+
+      const playBtn = document.createElement('button');
+      playBtn.className = 'play-btn';
+      playBtn.innerHTML = '▶';
+      playBtn.setAttribute('aria-label', 'Ouvir pronúncia');
+      playBtn.onclick = () => speak(item.en, playBtn);
+
+      top.appendChild(textWrap);
+      top.appendChild(playBtn);
+      card.appendChild(top);
+
+      const examples = document.createElement('div');
+      examples.className = 'examples';
+
+      [item.ex1, item.ex2].forEach(exText => {
+        const row = document.createElement('div');
+        row.className = 'example-row';
+        const miniPlay = document.createElement('button');
+        miniPlay.className = 'mini-play';
+        miniPlay.innerHTML = '▶';
+        miniPlay.setAttribute('aria-label', 'Ouvir frase de exemplo');
+        miniPlay.onclick = () => speak(exText, miniPlay);
+        const exSpan = document.createElement('span');
+        exSpan.className = 'example-text';
+        exSpan.textContent = exText;
+        row.appendChild(miniPlay);
+        row.appendChild(exSpan);
+        examples.appendChild(row);
+      });
+
+      card.appendChild(examples);
+      page.appendChild(card);
+    });
+
+    pagesEl.appendChild(page);
+  });
+
+  updateProgress();
+}
+
+render();
+</script>
+
+</body>
+</html>
